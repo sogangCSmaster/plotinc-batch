@@ -43,9 +43,13 @@ def save_with_pushNoti(datas):
             sql = "INSERT INTO analyzed (rcp_no, type, title, datetime, companyName, url) VALUES (%s, %s, %s, %s, %s, %s)"
             curs.execute(sql, (rcp_no, Type, title, datetime, companyName, url))
 
-            sql = "SELECT token FROM analyzed_push WHERE (pushable=%s AND companyName=%s)"
-            curs.execute(sql, ('Y', 'Y', companyName))
+            sql = "SELECT crpno FROM CrpNo WHERE Coname=%s"
+            curs.execute(sql, (companyName))
+            crpno = curs.fetchone()[0]
 
+            sql = "SELECT token FROM push_service WHERE crpno=%s AND pushable=%s"
+
+            curs.execute(sql, (crpno, 'Y'))
             tokens = curs.fetchall()
 
             pushArray = []
@@ -69,12 +73,14 @@ def save_with_pushNoti(datas):
             time.sleep(0.1)
         except Exception as e:
             print(e)
+            break
 
 
 def main():
     response = requests.get(api_url)
     datas = json.loads(response.text) #GET list
     save_with_pushNoti(datas)
+    #save_without_pushNoti(datas)
 
 if __name__ == "__main__":
     conn = pymysql.connect(host=host, user=user, password=password, db=db, charset=charset, autocommit=True)
