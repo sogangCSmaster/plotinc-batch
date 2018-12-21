@@ -25,7 +25,6 @@ def save_without_pushNoti(datas):
             curs.execute(sql, (rcp_no, Type, title, datetime, companyName, url))
         except Exception as e:
             print(e)
-        break
 
 def save_with_pushNoti(datas):
     for data in datas:
@@ -41,10 +40,10 @@ def save_with_pushNoti(datas):
         companyName = title.split(',')[0]
         url = source + soupTitle.find('a', href=True)['href']
         try:
-            #sql = "INSERT INTO analyzed (rcp_no, type, title, datetime, companyName, url) VALUES (%s, %s, %s, %s, %s, %s)"
-            #curs.execute(sql, (rcp_no, Type, title, datetime, companyName, url))
+            sql = "INSERT INTO analyzed (rcp_no, type, title, datetime, companyName, url) VALUES (%s, %s, %s, %s, %s, %s)"
+            curs.execute(sql, (rcp_no, Type, title, datetime, companyName, url))
 
-            sql = "SELECT token FROM analyzed_push WHERE pushableAll=%s OR (pushable=%s AND companyName=%s)"
+            sql = "SELECT token FROM analyzed_push WHERE (pushable=%s AND companyName=%s)"
             curs.execute(sql, ('Y', 'Y', companyName))
 
             tokens = curs.fetchall()
@@ -52,7 +51,6 @@ def save_with_pushNoti(datas):
             pushArray = []
             for token in tokens:
                 token = token[0]
-                print(token)
                 pushArray.append({
                     'to': token,
                     'title': '종목 실적 분석',
@@ -76,13 +74,7 @@ def save_with_pushNoti(datas):
 def main():
     response = requests.get(api_url)
     datas = json.loads(response.text) #GET list
-
     save_with_pushNoti(datas)
-
-    
-
-
-
 
 if __name__ == "__main__":
     conn = pymysql.connect(host=host, user=user, password=password, db=db, charset=charset, autocommit=True)
