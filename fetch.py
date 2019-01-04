@@ -55,18 +55,18 @@ def save_with_pushNoti(datas):
             pushArray = []
             for token in tokens:
                 token = token[0]
-                pushArray.append({
-                    'to': token,
-                    'title': '종목 실적 분석',
-                    'sound': 'default',
-                    'body': title,
-                    'data': {
+                if token:
+                    pushArray.append({
+                        'to': token,
                         'title': '종목 실적 분석',
+                        'sound': 'default',
                         'body': title,
-                        'link': url
-                    }
-
-                })
+                        'data': {
+                            'title': '종목 실적 분석',
+                            'body': title,
+                            'link': url
+                        }
+                    })
 
             response = requests.post(pushAPI, data=json.dumps(pushArray), headers=headers)
             print(response.text)
